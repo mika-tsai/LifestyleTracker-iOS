@@ -1,0 +1,272 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+		3D8EA2ACFE87E2C0B80D8144 /* LifestyleTrackerApp.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = LifestyleTrackerApp.swift;
+			sourceTree = "<group>";
+		};
+		1049643FC6E09723F12CCF15 /* Models.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Models.swift;
+			sourceTree = "<group>";
+		};
+		12E98B0DB8E7433B94201A09 /* LifestyleModel.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = LifestyleModel.swift;
+			sourceTree = "<group>";
+		};
+		0317880200802A60C569C4E2 /* CalendarManager.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = CalendarManager.swift;
+			sourceTree = "<group>";
+		};
+		4F776434CB8FEBB04C6905FF /* Planner.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Planner.swift;
+			sourceTree = "<group>";
+		};
+		2EAEFFD7AB58609E474AAA09 /* Views.swift */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Views.swift;
+			sourceTree = "<group>";
+		};
+		68EEF920516B0AF8F874DCCB /* Assets.xcassets */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		CDA14D0B2D954643C80CF0A1 /* Info.plist */ = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		913BD4A55EE87F36457D54E4 /* LifestyleTracker.app */ = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = LifestyleTracker.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		64A797807018CEECD8FE1A8C /* LifestyleTrackerApp.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 3D8EA2ACFE87E2C0B80D8144 /* LifestyleTrackerApp.swift */;
+		};
+		8C31600902B2BF3A8D1C9BE1 /* Models.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 1049643FC6E09723F12CCF15 /* Models.swift */;
+		};
+		9C20AEC3A1A710B0D2AC915B /* LifestyleModel.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 12E98B0DB8E7433B94201A09 /* LifestyleModel.swift */;
+		};
+		07D72AC867F13FA6CDAA64E6 /* CalendarManager.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 0317880200802A60C569C4E2 /* CalendarManager.swift */;
+		};
+		7F3054F72FD06627EF13F0AD /* Planner.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 4F776434CB8FEBB04C6905FF /* Planner.swift */;
+		};
+		F5FE752E56DE85FCFF2B21F6 /* Views.swift in Sources */ = {
+			isa = PBXBuildFile;
+			fileRef = 2EAEFFD7AB58609E474AAA09 /* Views.swift */;
+		};
+		804474DEBE89EB807317672C /* Assets.xcassets in Resources */ = {
+			isa = PBXBuildFile;
+			fileRef = 68EEF920516B0AF8F874DCCB /* Assets.xcassets */;
+		};
+		19DCD0DD3A4354CAF10D7DF3 /* Main Group */ = {
+			isa = PBXGroup;
+			children = (
+				F742F5ED5D0F4717E430C39E /* LifestyleTracker */,
+				36D05407B0B36A725693BBAD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F742F5ED5D0F4717E430C39E /* LifestyleTracker */ = {
+			isa = PBXGroup;
+			children = (
+				3D8EA2ACFE87E2C0B80D8144 /* LifestyleTrackerApp.swift */,
+				1049643FC6E09723F12CCF15 /* Models.swift */,
+				12E98B0DB8E7433B94201A09 /* LifestyleModel.swift */,
+				0317880200802A60C569C4E2 /* CalendarManager.swift */,
+				4F776434CB8FEBB04C6905FF /* Planner.swift */,
+				2EAEFFD7AB58609E474AAA09 /* Views.swift */,
+				68EEF920516B0AF8F874DCCB /* Assets.xcassets */,
+				CDA14D0B2D954643C80CF0A1 /* Info.plist */,
+			);
+			path = LifestyleTracker;
+			sourceTree = "<group>";
+		};
+		36D05407B0B36A725693BBAD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				913BD4A55EE87F36457D54E4 /* LifestyleTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		03D463B7203AA1ADD0C5FDB7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64A797807018CEECD8FE1A8C /* LifestyleTrackerApp.swift in Sources */,
+				8C31600902B2BF3A8D1C9BE1 /* Models.swift in Sources */,
+				9C20AEC3A1A710B0D2AC915B /* LifestyleModel.swift in Sources */,
+				07D72AC867F13FA6CDAA64E6 /* CalendarManager.swift in Sources */,
+				7F3054F72FD06627EF13F0AD /* Planner.swift in Sources */,
+				F5FE752E56DE85FCFF2B21F6 /* Views.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		77C7846A04BE2C92D94CBA13 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				804474DEBE89EB807317672C /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CC226380060C14FD436DF5AA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3DC0DB889344EDF0B8706951 /* LifestyleTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EBFE50E6502BE02EB471C8F7 /* Build configuration list for PBXNativeTarget */;
+			buildPhases = (
+				03D463B7203AA1ADD0C5FDB7 /* Sources */,
+				CC226380060C14FD436DF5AA /* Frameworks */,
+				77C7846A04BE2C92D94CBA13 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = LifestyleTracker;
+			productName = LifestyleTracker;
+			productReference = 913BD4A55EE87F36457D54E4 /* LifestyleTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D1FB402F1269BA7396DCA9CB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					3DC0DB889344EDF0B8706951 = {CreatedOnToolsVersion = 16.0; };
+				};
+			};
+			buildConfigurationList = EE56F58ADFEB5C86039494BE /* Build configuration list for PBXProject */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = zh_TW;
+			hasScannedForEncodings = 0;
+			knownRegions = (zh_TW,en,Base);
+			mainGroup = 19DCD0DD3A4354CAF10D7DF3;
+			productRefGroup = 36D05407B0B36A725693BBAD;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (3DC0DB889344EDF0B8706951 /* LifestyleTracker */,);
+		};
+		26C290C68F52F2866318C595 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+			};
+			name = Debug;
+		};
+		C7823A199856BEF460130F70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				DEBUG_INFORMATION_FORMAT = dwarf-with-dsym;
+			};
+			name = Release;
+		};
+		0ED3D37ED76C4C54B3DC5DB0 /* Target Config */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_STYLE = "Automatic";
+				CURRENT_PROJECT_VERSION = "1";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "LifestyleTracker/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
+				MARKETING_VERSION = "1.0";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mikatsai.lifestyletracker";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = "5.0";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Debug;
+		};
+		7FDF0DEC06D2FC61862D6A1A /* Target Config */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_STYLE = "Automatic";
+				CURRENT_PROJECT_VERSION = "1";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "LifestyleTracker/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
+				MARKETING_VERSION = "1.0";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mikatsai.lifestyletracker";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = "5.0";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Release;
+		};
+		EE56F58ADFEB5C86039494BE /* Configuration List */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				26C290C68F52F2866318C595 /* Debug */,
+				C7823A199856BEF460130F70 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EBFE50E6502BE02EB471C8F7 /* Configuration List */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0ED3D37ED76C4C54B3DC5DB0 /* Debug */,
+				7FDF0DEC06D2FC61862D6A1A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+	};
+	rootObject = D1FB402F1269BA7396DCA9CB /* Project object */;
+}
