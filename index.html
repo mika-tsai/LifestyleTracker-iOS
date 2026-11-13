@@ -1,0 +1,591 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#254d40"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="生活重整"><link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png?v=3"><link rel="icon" href="./icon-192.png" type="image/png"><link rel="manifest" href="./manifest.webmanifest?v=3"><title>我的生活重整｜Google Calendar 同步版</title><style>
+:root{font-family:system-ui,-apple-system,'Noto Sans TC',sans-serif;color:#27322e;background:#f5f6f2}*{box-sizing:border-box}body{margin:0}header{background:#254d40;color:white;padding:30px max(18px,calc((100vw - 960px)/2))}header h1{margin:0 0 9px;font-size:27px}header p{margin:0;color:#dbebe3;line-height:1.7}.wrap{max-width:960px;margin:auto;padding:18px;display:grid;gap:16px}.panel{background:white;border:1px solid #dde4dc;border-radius:16px;padding:20px;box-shadow:0 2px 12px #1f3c3010}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:16px 0 9px;color:#365d4d}.muted{color:#62746a;font-size:13px;line-height:1.7}.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}input,select,textarea{width:100%;border:1px solid #cbd7cf;border-radius:9px;padding:11px;font:inherit;background:#fff;color:#263a30}textarea{min-height:76px;resize:vertical}.pill{background:#eaf1ea;padding:7px 11px;border-radius:22px;font-size:12px;color:#365d4d}.note{background:#f0f5ef;border-left:4px solid #749b82;padding:14px;border-radius:8px;line-height:1.75}.schedule{display:grid;grid-template-columns:90px 1fr;gap:9px;border-bottom:1px solid #edf0ec;padding:10px 0;font-size:14px}.schedule:last-child{border:0}.schedule b{color:#356550}.actions{display:flex;gap:9px;flex-wrap:wrap}button{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:700;cursor:pointer;background:#315e4c;color:white}button.secondary{background:#e7eee8;color:#254d40}button.danger{background:#f6e8e4;color:#974b42}.check{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:8px 0}.check input{width:auto;margin:4px 0}.stat{background:#f2f6f1;border-radius:12px;padding:14px}.stat strong{display:block;font-size:23px;color:#315e4c;margin-top:6px}.mini{font-size:12px;color:#6b7c71}table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:9px;text-align:left;border-bottom:1px solid #edf0ed}th{color:#4b6757}canvas{width:100%;max-height:230px}.warn{color:#805c39;background:#fff4e8;border-radius:10px;padding:11px;font-size:13px;line-height:1.7}@media(max-width:650px){.cols,.cols3{grid-template-columns:1fr}.wrap{padding:12px}.panel{padding:16px}header{padding:24px 18px}}
+.calendar-picker{border:1px solid #cbd7cf;border-radius:10px;padding:10px;background:#fff;max-height:230px;overflow-y:auto}.calendar-picker .check{margin:6px 0;padding:5px 3px;cursor:pointer;align-items:center}.calendar-picker .check:hover{background:#f2f6f1;border-radius:6px}.calendar-picker input[type=checkbox]{width:18px;height:18px;accent-color:#315e4c;flex-shrink:0}.cal-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:7px 0}.cal-tools button{padding:6px 10px;font-size:12px}.cal-hint{font-size:12px;color:#62746a;margin-top:5px}
+/* Habit routines */
+.routine-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.routine-tabs button{background:#eaf0e9;color:#315e4c}
+.routine-tabs button.active{background:#315e4c;color:#fff}
+.routine-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.routine-progress{background:#e6ede8;border-radius:999px;overflow:hidden;height:9px;margin:9px 0}
+.routine-progress>span{display:block;background:#539078;height:100%;transition:width .2s}
+.routine-item{display:flex;align-items:flex-start;gap:11px;padding:12px 0;border-bottom:1px solid #edf0ed}
+.routine-item:last-child{border-bottom:0}
+.routine-item input[type=checkbox]{width:19px;height:19px;flex-shrink:0;accent-color:#315e4c;margin:2px 0 0}
+.routine-item .routine-text{flex:1;min-width:0}
+.routine-item .routine-title{font-size:14px;font-weight:650;line-height:1.5}
+.routine-item .routine-description{font-size:12px;color:#62746a;margin-top:2px;line-height:1.6}
+.routine-item.done .routine-title{text-decoration:line-through;color:#7a8d83}
+.routine-item button{border:1px solid #d8e0d9;padding:3px 8px;background:#f8faf7;color:#5d7266;font-size:12px}
+.routine-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:12px}
+.routine-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.routine-tip{font-size:12px;color:#61766a;line-height:1.7}
+
+.plan-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.plan-controls label{font-size:12px;margin:0 0 5px}
+.plan-controls select,.plan-controls input{padding:9px}
+.plan-toolbar{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}
+.plan-status{font-size:13px;line-height:1.65;background:#f0f5ef;border-radius:10px;padding:10px 12px;margin:11px 0}
+.plan-warnings{background:#fff1e5;border-left:4px solid #bd8758;padding:11px 13px;border-radius:9px;font-size:13px;line-height:1.8;margin-bottom:12px}
+.plan-line{display:grid;grid-template-columns:100px 1fr;gap:12px;border-bottom:1px solid #e9eee9;padding:11px 3px;align-items:start}
+.plan-time{font-weight:700;font-size:12px;color:#456655;padding-top:3px}
+.plan-body{border-left:3px solid #b5caba;padding-left:10px}
+.plan-title{font-size:14px;font-weight:700}
+.plan-desc{color:#63746b;font-size:12px;line-height:1.7;margin-top:3px}
+.plan-kind{font-size:11px;display:inline-block;background:#eaf1ea;border-radius:6px;padding:2px 6px;margin-top:5px}
+.plan-line.busy .plan-body{border-color:#6e94a7}.plan-line.travel .plan-body{border-color:#a38fbc}.plan-line.health .plan-body{border-color:#93a96b}.plan-line.conflict .plan-body{border-color:#c57c65}
+@media(max-width:650px){.plan-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-line{grid-template-columns:87px 1fr;gap:7px}}
+
+/* Main app navigation and month overview */
+.app-shell{display:grid;gap:14px}.app-nav{position:sticky;top:0;z-index:20;display:flex;gap:5px;align-items:center;justify-content:space-between;background:#f5f6f2ee;backdrop-filter:blur(12px);padding:8px 0}
+.app-nav button{background:transparent;color:#62746a;padding:10px 9px;font-size:13px;border-radius:10px;flex:1;min-width:0}
+.app-nav button.active{background:#254d40;color:white;box-shadow:0 3px 7px #254d4022}
+.app-view{display:none}.app-view.active{display:grid;gap:16px;align-content:start}
+.month-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.month-top h2{font-size:22px;margin:0}.month-actions{display:flex;gap:7px;align-items:center}.month-actions button{padding:8px 12px;background:#ecf2ec;color:#254d40}
+.month-days,.month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.month-days{margin:16px 0 5px;text-align:center;color:#76897e;font-size:12px}
+.month-cell{border:1px solid #e2e9e1;border-radius:10px;min-height:75px;background:#fcfdfb;color:#244c3e;text-align:left;padding:7px 5px;display:flex;flex-direction:column;align-items:stretch;gap:2px;overflow:hidden;cursor:pointer}
+.month-cell .month-number{font-size:13px;font-weight:750;display:flex;justify-content:space-between;align-items:center}
+.month-cell.other-month{opacity:.42}.month-cell.today-date .month-number{color:#bd6c44}.month-cell.picked{border-color:#366f56;box-shadow:inset 0 0 0 1px #366f56;background:#edf5ef}
+.month-cell .month-dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}.month-dot{height:5px;width:13px;border-radius:999px;background:#6d9fa4}.month-dot.habits{background:#c9a16b}.month-dot.health{background:#76a47c}
+.month-cell .month-short{font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#65776c;font-weight:400}
+.month-cell:hover{background:#f0f6ef}
+.month-explainer{margin-top:14px;font-size:12px;color:#607468;line-height:1.7}.month-selection{padding:11px 12px;border-radius:12px;background:#f2f6f1;font-size:13px;line-height:1.7}
+.storage-note{background:#f5f7f3;border-radius:12px;padding:13px;font-size:13px;line-height:1.8}
+.backup-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.app-view>section.panel{margin:0}
+@media(max-width:650px){.month-cell{min-height:62px;padding:6px 3px}.month-cell .month-short{font-size:9px}.month-cell .month-number{font-size:12px}.app-nav button{font-size:12px;padding:10px 3px}.month-grid,.month-days{gap:3px}}
+</style><style>
+@media(max-width:650px){body{padding-bottom:calc(75px + env(safe-area-inset-bottom,0px))}.app-nav{position:fixed;left:0;right:0;top:auto;bottom:0;padding:8px 9px calc(8px + env(safe-area-inset-bottom,0px));background:#f8faf7f2;border-top:1px solid #dce7df;box-shadow:0 -2px 12px #00000012;z-index:60}.app-nav button{font-size:12px;padding:11px 2px}.wrap{padding-top:14px}.month-cell{min-height:65px}}
+</style></head><body><header><h1>我的生活重整 ☀</h1><p>慢慢找回體力、穩定睡眠、準時出門。不是要每天完美，而是發現什麼最適合自己。</p></header><main class="wrap" id="appMain">
+<nav class="app-nav" aria-label="主選單">
+ <button type="button" data-nav="calendar" class="active">📅 月曆</button><button type="button" data-nav="day">☀️ 當天</button><button type="button" data-nav="habits">✅ 習慣</button><button type="button" data-nav="insights">📈 趨勢</button><button type="button" data-nav="settings">⚙️ 設定</button>
+</nav>
+<div class="app-view active" id="view-calendar">
+ <section class="panel">
+  <div class="month-top"><h2 id="monthTitle">月曆</h2><div class="month-actions"><button type="button" id="monthPrev" aria-label="上一個月">‹</button><button type="button" id="monthToday">今天</button><button type="button" id="monthNext" aria-label="下一個月">›</button></div></div>
+  <div class="month-days"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+  <div class="month-grid" id="monthGrid" aria-label="按日期查看當天紀錄"></div>
+  <div class="month-explainer">🟦 行程（已勾選的 Google 行事曆）　🟩 健康紀錄　🟨 習慣打卡。點選任何日期會打開那一天的完整內容。</div>
+ </section>
+ <section class="panel"><div class="row" style="justify-content:space-between"><h2>這一天的摘要</h2><button type="button" id="monthOpen" class="secondary">查看當天詳情</button></div><div class="month-selection" id="monthSummary">選擇一個日期。</div><p class="muted">Google 行事曆只會載入已勾選的分類；尚未登入時，畫面不會假裝已取得真實行程。</p></section>
+</div>
+<div class="app-view" id="view-day"></div><div class="app-view" id="view-habits"></div><div class="app-view" id="view-insights"></div><div class="app-view" id="view-settings"></div>
+<section class="panel"><div class="row" style="justify-content:space-between"><h2>今天的節奏</h2><span class="pill" id="dayLabel"></span></div><div class="note" id="dayAdvice"></div><h3>本日關鍵時間（可依實際工作調整）</h3><div id="schedule"></div><p class="muted">跨地點約需 60 分鐘；週一、二 18:00 家教與 18:00 下班存在交通衝突，務必安排提前離開或調整課程。週五 Podcast 在家剪輯，不計額外通勤。</p></section>
+<section class="panel" id="pwaInstallInfo"><h2>📱 安裝到 iPhone 主畫面</h2>
+<p class="muted">使用 iPhone Safari 開啟你的 GitHub Pages 網址，點「分享」→「加入主畫面」，並開啟「以網頁 App 開啟」。之後從主畫面圖示即可像 App 一樣使用。</p>
+<div class="note">部分頁面可離線開啟；Google Calendar 同步與登入需要網路。健康與習慣紀錄仍存在此裝置的網站儲存空間，不會自動跨 iPhone、Mac 同步。請定期使用下方備份。</div></section><section class="panel" id="privacyPanel">
+<h2>🔐 資料儲存與備份</h2>
+<div class="storage-note"><strong>健康紀錄、習慣打卡、自訂作息：</strong>儲存在目前裝置／瀏覽器的 localStorage。<br><strong>Google 日曆活動：</strong>僅在連線期間讀取、暫存在網頁記憶體；不儲存到 GitHub，也不寫入 Google Calendar。<br><strong>Google OAuth Client ID、已勾選行事曆：</strong>存在瀏覽器設定中；授權存取權杖不會持久儲存。<br><strong>注意：</strong>使用不同裝置或清除網站資料可能遺失紀錄，請定期下載備份。GitHub Pages 是公開網頁，不是私人資料庫。</div>
+<div class="backup-actions"><button type="button" id="appBackup">⬇ 匯出整站備份</button><button type="button" id="appImport" class="secondary">⬆ 還原備份</button><input type="file" id="appImportFile" accept="application/json,.json" style="display:none"></div>
+<p class="muted" id="backupStatus">備份包含本網站的健康與習慣資料，請存放在安全的位置，不要上傳到公開 GitHub Repository。</p>
+</section>
+<section class="panel" id="googlePanel">
+<div class="row" style="justify-content:space-between"><h2>📅 Google Calendar 即時行程</h2><span class="pill" id="gStatus">尚未連線</span></div>
+<p class="muted">連結你的 Google 行事曆，讀取所選日期前後的行程、標示通勤衝突，並結合精神分數提供調節建議。<strong>唯讀</strong>：不建立、更改或刪除 Google 行程，也不把健康紀錄上傳 Google。</p>
+<div class="note" id="gOriginNotice">首次使用需先將本 HTML 部署至 HTTPS 網址（或本機 localhost），建立 Google OAuth 網頁用戶端 ID。直接雙擊開啟 file:// 無法使用 Google 登入。</div>
+<div class="cols" style="margin-top:14px"><div><label for="gClient">Google OAuth Client ID（非密碼）</label><input id="gClient" autocomplete="off" placeholder="123456789-xxxx.apps.googleusercontent.com"></div><div><label id="gCalendarLabel">選擇要查看的行事曆（可多選）</label><div class="cal-tools"><button type="button" class="secondary" id="gSelectAll" disabled>全選</button><button type="button" class="secondary" id="gSelectNone" disabled>全部取消</button><span class="mini" id="gSelectedCount">已選 0 個</span></div><div class="calendar-picker" id="gCalendar" role="group" aria-labelledby="gCalendarLabel"><span class="muted">連線後載入行事曆</span></div><p class="cal-hint">只有勾選的行事曆會同步活動。公司行事曆可保持未勾選。</p></div></div>
+<div class="actions" style="margin-top:12px"><button id="gConnect">使用 Google 授權讀取</button><button class="secondary" id="gRefresh" disabled>重新同步</button><button class="secondary" id="gDisconnect" disabled>中斷連線</button></div>
+<p class="muted" id="gMessage">Client ID 只保存在此瀏覽器；存取權杖只存在當前頁面記憶體，重新開啟通常需再次授權。連線後每 5 分鐘在頁面開啟期間嘗試更新；不會在關閉網頁後背景同步。</p>
+<div class="cols3" style="margin-top:14px"><div class="stat"><span class="mini">當日行程數</span><strong id="gCount">—</strong></div><div class="stat"><span class="mini">行程時數（不含全天）</span><strong id="gHours">—</strong></div><div class="stat"><span class="mini">預估負荷</span><strong id="gLoad">—</strong></div></div>
+<h3>所選日期行程 <span class="muted" id="gDate"></span></h3><div id="gEvents" class="muted">尚未同步。登入後自動以「每日健康紀錄」選取的日期顯示行程。</div>
+<h3>根據今日安排的身體調節建議</h3><div class="note" id="gAdvice">未連線前先以固定週安排為參考；同步後會依實際行程與當日疲勞紀錄更新。</div>
+<details style="margin-top:16px"><summary style="cursor:pointer;font-weight:700">Google Cloud 設定教學（點此展開）</summary><ol style="line-height:1.9;padding-left:22px"><li>把這個 HTML 上傳到你控制的 <strong>HTTPS 靜態網站</strong>（例如 GitHub Pages 或 Netlify），記下完整網址與 origin（只包含協定＋網域）。</li><li>開啟 <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>，建立或選擇專案，啟用 <a href="https://console.cloud.google.com/apis/library/calendar-json.googleapis.com" target="_blank" rel="noopener">Google Calendar API</a>。</li><li>在 <strong>Google Auth Platform</strong> 設定品牌、使用者類型、資料存取權（Scopes）；個人測試建議選 External／Testing，新增自己的 Gmail 為測試使用者，並使用 <code>https://www.googleapis.com/auth/calendar.readonly</code> 唯讀權限。</li><li>在 <strong>Clients／憑證</strong> 新增 OAuth 用戶端，類型選 <strong>Web application</strong>。在 <strong>Authorized JavaScript origins</strong> 輸入網站 origin，例如 <code>https://your-name.github.io</code>；本機開發可用 <code>http://localhost:8000</code>。這個 token 模式不需要自行設定 redirect URI。</li><li>複製用戶端 ID（以 <code>.apps.googleusercontent.com</code> 結尾），填入上方，按「使用 Google 授權讀取」，選擇帳戶並核准唯讀權限。</li><li>連線成功後可選擇行事曆，網頁會讀取所選日附近 14 天的活動。可以勾選多個想看的行事曆，未勾選的行事曆不會讀取活動。</li></ol><p class="muted">測試模式的 Google OAuth 授權可能有時間限制，並且僅允許測試使用者；如發布給其他人使用，可能需要 Google 審查。Google 專案設定介面名稱可能變動。</p></details>
+</section>
+<section class="panel"><h2>每日健康紀錄</h2><div class="cols"><div><label for="date">紀錄日期</label><input type="date" id="date"></div><div><label for="type">今天的主要行程</label><select id="type"><option>一般上班日</option><option>上班＋家教</option><option>家教日</option><option>在家剪輯</option><option>休息日</option><option>其他</option></select></div><div><label for="sleep">昨晚實際入睡</label><input type="time" id="sleep"></div><div><label for="wake">今天離開床的時間</label><input type="time" id="wake"></div><div><label for="sleepQuality">睡眠品質（1 差、5 好）</label><select id="sleepQuality"><option value="">請選擇</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div><div><label for="energy">白天精神（0 最差、10 最好）</label><input type="number" min="0" max="10" id="energy" placeholder="例如 4"></div><div><label for="fatigue">疲勞程度（0 不累、10 最累）</label><input type="number" min="0" max="10" id="fatigue" placeholder="例如 7"></div><div><label for="mood">情緒／壓力（0 低、10 高）</label><input type="number" min="0" max="10" id="mood" placeholder="例如 5"></div><div><label for="water">飲水量（mL，可估計）</label><input type="number" min="0" id="water" placeholder="例如 1500"></div><div><label for="movement">運動分鐘數（有氧）</label><input type="number" min="0" id="movement" placeholder="例如 30"></div><div><label for="period">月經狀態</label><select id="period"><option>非經期</option><option>經期第 1 天</option><option>經期第 2 天</option><option>經期第 3 天起</option><option>經前</option><option>不確定</option></select></div><div><label for="pain">腹部／經痛程度（0–10）</label><input type="number" min="0" max="10" id="pain" placeholder="例如 6"></div></div><h3>今天有做到的事</h3><div class="cols"><label class="check"><input type="checkbox" id="breakfast"> 有吃早餐或適量晨間補充</label><label class="check"><input type="checkbox" id="lunch"> 有吃正餐午餐</label><label class="check"><input type="checkbox" id="dinner"> 有吃晚餐／足夠食物</label><label class="check"><input type="checkbox" id="out"> 準時出門或到達約定地點</label><label class="check"><input type="checkbox" id="light"> 起床後接觸自然光</label><label class="check"><input type="checkbox" id="rest"> 有留給自己恢復時間</label></div><h3>身體與心情備註</h3><textarea id="notes" placeholder="例如：早上醒來又睡；下午頭暈；經痛位置；今天做完家教後特別累；洗澡後比較清醒……"></textarea><div class="actions" style="margin-top:14px"><button id="save">儲存今天紀錄</button><button class="secondary" id="clear">清空當日表單</button></div><p class="muted" id="savedState">資料保存在這台裝置的瀏覽器中，沒有傳送到伺服器。請定期匯出備份；更換裝置、清除瀏覽資料或使用無痕模式可能導致資料遺失。</p></section>
+
+<section class="panel" id="smartPlanPanel">
+  <div class="row" style="justify-content:space-between"><h2>🗓️ 我的今日自動排程</h2><span class="pill" id="planLoad">準備規劃</span></div>
+  <p class="muted">以「每日健康紀錄」選的日期為準。連線後優先使用你已勾選的 Google 行事曆；未連線時依既有作息產生<strong>參考模板</strong>。不修改你的 Google 行程。</p>
+  <div class="plan-controls">
+    <div><label for="planCommute">跨地點通勤（分鐘）</label><input id="planCommute" type="number" min="0" max="180" step="5" value="60"></div>
+    <div><label for="planWorkEnd">平日下班</label><select id="planWorkEnd"><option value="18:00">18:00</option><option value="17:00">17:00</option><option value="19:00">19:00</option></select></div>
+    <div><label for="planMorning">早晨清潔方式</label><select id="planMorning"><option value="short">晚上洗澡，早上簡單整理</option><option value="full">早上洗頭、吹髮 40 分鐘</option><option value="rinse">晚上洗頭，早上沖澡 10 分鐘</option></select></div>
+    <div><label for="planSleep">期望睡眠機會（小時）</label><select id="planSleep"><option value="8.5">8.5 小時</option><option value="8">8 小時</option><option value="9">9 小時</option></select></div>
+    <div><label for="planWork">平日預設工作時段</label><select id="planWork"><option value="yes">加入 10:00 至下班</option><option value="no">只依 Google 行程</option></select></div>
+    <div><label for="planAuto">未同步的固定家教</label><select id="planAuto"><option value="yes">加入已知的家教／剪輯作為參考</option><option value="no">僅使用同步日曆</option></select></div>
+  </div>
+  <div class="plan-toolbar"><button id="planGenerate">重新安排今天</button><button class="secondary" id="planCopy">複製今日計畫</button><button class="secondary" id="planIcs">匯出建議行程 .ics</button></div>
+  <div class="plan-status" id="planSummary">正在整理今日行程。</div>
+  <div id="planWarnings"></div>
+  <div id="planItems"></div>
+  <p class="muted" style="margin-top:12px">固定行程與建議安排會分別標示。工作地點、家教地點等如未提供詳細地址，只能以你設定的 60 分鐘通勤估算，並非即時路線預測；請依實際情況確認。</p>
+</section>
+<section class="panel" id="routinePanel">
+  <div class="row" style="justify-content:space-between"><h2>✅ 我的生活習慣清單</h2><span class="pill">每日／每週／每月</span></div>
+  <p class="muted">參考你的圖片，將習慣分成每日、每週、每月；依照實際上班、家教與體力調整，不照抄「06:00 起床、22:00 睡覺」。勾選會保存在這個瀏覽器。</p>
+  <div class="routine-tabs" role="tablist" aria-label="習慣清單類型">
+    <button type="button" id="routineDaily" class="active" aria-pressed="true">每日</button>
+    <button type="button" id="routineWeekly" aria-pressed="false">每週</button>
+    <button type="button" id="routineMonthly" aria-pressed="false">每月</button>
+  </div>
+  <div class="routine-toolbar"><div><strong id="routinePeriod"></strong><div class="mini" id="routineCount">尚未完成</div></div><button type="button" class="secondary" id="routineReset" style="font-size:12px;padding:8px 11px">重設本期勾選</button></div>
+  <div class="routine-progress"><span id="routineBar" style="width:0%"></span></div>
+  <div id="routineList"></div>
+  <div class="routine-add"><input id="routineNew" placeholder="加入自己的習慣，例如練字 30 分鐘" maxlength="120" aria-label="新增習慣"><button id="routineAdd" type="button">＋ 新增</button></div>
+  <div class="routine-foot"><button id="routineBackup" class="secondary" type="button">匯出習慣清單 JSON</button><button id="routineImportBtn" class="secondary" type="button">匯入習慣備份</button><input type="file" id="routineImport" accept=".json,application/json" style="display:none"></div>
+  <p class="routine-tip" id="routineTip">✓ 這是一份可調整的參考清單，不是每項都必須做完。疲勞或經痛明顯的日子，能正常吃飯、休息就很好。</p>
+</section>
+<section class="panel"><h2>最近 14 天的趨勢</h2><div class="cols3"><div class="stat"><span class="mini">有紀錄天數</span><strong id="logged">0</strong></div><div class="stat"><span class="mini">平均白天精神</span><strong id="avg">—</strong></div><div class="stat"><span class="mini">最近 7 天有氧</span><strong id="minutes">0 分</strong></div></div><h3>精神與疲勞變化</h3><canvas id="chart" width="860" height="230"></canvas><p class="muted">精神分數愈高愈好；疲勞分數愈高代表愈疲倦。記錄趨勢不能取代診斷。</p><h3>最近紀錄</h3><div style="overflow:auto"><table><thead><tr><th>日期</th><th>入睡</th><th>起床</th><th>精神</th><th>疲勞</th><th>經痛</th></tr></thead><tbody id="history"></tbody></table></div><div class="actions" style="margin-top:16px"><button class="secondary" id="csv">匯出 CSV（Excel 可開啟）</button><button class="secondary" id="json">完整備份 JSON</button><button class="secondary" id="importBtn">匯入 JSON 備份</button><input type="file" accept=".json,application/json" id="import" style="display:none"><button class="danger" id="erase">刪除本機所有紀錄</button></div></section>
+<section class="panel"><h2>先保護身體，而不是逼自己更努力</h2><div class="warn">你曾提到整天疲倦、精神約 4/10，以及嚴重經痛。這些值得近期安排家醫科／一般內科和婦產科評估。把脈不能確認肺部發炎、腸道或卵巢病變；如有突發劇烈單側腹痛、昏厥或呼吸困難，應立即就醫。</div><p class="muted">這個網頁是個人紀錄工具，並非醫療診斷或治療建議。若疲勞明顯加重，請先減少運動和工作負荷。</p></section></main><script>
+const $=id=>document.getElementById(id);const key='lifestyle_reset_records_v1';const fields=['date','type','sleep','wake','sleepQuality','energy','fatigue','mood','water','movement','period','pain','notes','breakfast','lunch','dinner','out','light','rest'];const checks=new Set(['breakfast','lunch','dinner','out','light','rest']);let db={};try{db=JSON.parse(localStorage.getItem(key)||'{}')||{}}catch(e){db={}};
+const weekdays=['週日','週一','週二','週三','週四','週五','週六'];const plans=[{label:'週日｜家教＋恢復',hint:'10:00–14:00 家教；14:00 下課後通勤約一小時。下午不要整段塞滿工作，讓身體有恢復的空間。',steps:[['09:00 前','依交通與準備需求起床'],['09:00','若通勤一小時，最晚出門'],['10:00–14:00','家教'],['14:00–15:00','回家通勤'],['下午','吃飯、休息；視體力安排輕活動']]},{label:'週一｜上班＋家教',hint:'18:00 家教需要提前約一小時從公司出發；先確認實際能否 17:00 離開。家教後只做必要的事。',steps:[['08:45','出門上班'],['10:00','上班'],['17:00 前後','需跨地點時，提早離開去家教'],['18:00–20:00','Tim 家教'],['20:00–21:00','回家通勤'],['21:00 後','用餐、簡單整理、休息']]},{label:'週二｜高負荷日',hint:'18:00–21:00 家教，可能涉及多名學生；這天不安排額外讀書或運動，並預先準備晚餐。',steps:[['08:45','出門上班'],['10:00','上班'],['17:00 前後','若跨地點，安排交通'],['18:00–21:00','家教'],['21:00–22:00','回家通勤'],['22:00 後','簡化睡前流程，優先睡眠']]},{label:'週三｜優先恢復日',hint:'若沒有其他臨時任務，這天適合保留完整休息；狀況良好時可以短時間散步或做輕量學習。',steps:[['08:45','出門上班'],['10:00–18:00','上班（依實際情況）'],['18:00–19:00','回家通勤'],['19:00 後','吃飯、放鬆；不必再安排高負荷任務']]},{label:'週四｜彈性運動日',hint:'若一週體力尚可，可在週四安排跳舞、羽球或匹克球；記得計入來回各約一小時交通。',steps:[['08:45','出門上班'],['10:00–18:00','上班（依實際情況）'],['18:00 後','通勤／晚餐'],['晚上','視體力安排 30–60 分鐘活動或休息']]},{label:'週五｜在家 Podcast',hint:'Podcast 在家剪輯，不需要剪輯後再通勤。提前吃晚餐，22:00 後不再開新的工作。',steps:[['08:45','出門上班'],['10:00–18:00','上班（依實際情況）'],['18:00–19:00','回家通勤'],['19:00–20:00','晚餐和準備'],['20:00–22:00','在家剪 Podcast'],['22:00 後','週六教材檢查、放鬆睡覺']]},{label:'週六｜家教密集日',hint:'週六早上 10:00 開始家教。若下午另有高中家教，活動與地點間都要預留交通。晚上不要強制排學習任務。',steps:[['09:00 前','依交通需求起床與出門'],['10:00–14:00','上午家教（依當週實際課表）'],['14:00–16:00','午餐、移動／休息'],['16:00–18:00','高中家教（若當週有課）'],['晚上','用餐、補充體力、休息']]}];
+function today(){let d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')}function weekday(s){let a=s.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]).getDay()}function plan(){const i=weekday($('date').value||today()),p=plans[i];$('dayLabel').textContent=weekdays[i];$('dayAdvice').textContent=p.hint;$('schedule').innerHTML=p.steps.map(([a,b])=>`<div class="schedule"><b>${a}</b><span>${b}</span></div>`).join('');}
+function putDay(){const r=db[$('date').value]||{};fields.filter(f=>f!=='date').forEach(f=>{if(checks.has(f))$(f).checked=!!r[f];else $(f).value=r[f]??(f==='type'?'一般上班日':f==='period'?'非經期':'')});plan()};function store(){let r={};fields.filter(f=>f!=='date').forEach(f=>r[f]=checks.has(f)?$(f).checked:$(f).value);db[$('date').value]=r;localStorage.setItem(key,JSON.stringify(db));$('savedState').textContent='已儲存 '+$('date').value+'。資料僅在此瀏覽器內；請定期匯出備份。';render()};function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}function csvCell(x){return '"'+String(x??'').replaceAll('"','""')+'"'}function draw(data){const c=$('chart'),ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#fbfcfa';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#e1e9e1';ctx.lineWidth=1;for(let k=0;k<=5;k++){let y=18+k*37;ctx.beginPath();ctx.moveTo(45,y);ctx.lineTo(w-18,y);ctx.stroke();ctx.fillStyle='#77877d';ctx.font='12px system-ui';ctx.fillText(String(10-k*2),12,y+4)}if(!data.length){ctx.fillStyle='#7a887f';ctx.font='15px system-ui';ctx.fillText('儲存每日紀錄後，這裡會出現趨勢線',120,114);return}const xx=i=>data.length===1?w/2:50+i*(w-78)/(data.length-1),yy=v=>18+(10-v)/10*185;[['energy','#287f67'],['fatigue','#ca8879']].forEach(([f,color])=>{ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;let started=false;data.forEach(([day,r],i)=>{const v=Number(r[f]);if(r[f]===''||r[f]==null||!Number.isFinite(v)){started=false;return}const x=xx(i),y=yy(v);if(!started){ctx.beginPath();ctx.moveTo(x,y);started=true}else ctx.lineTo(x,y);ctx.stroke()});data.forEach(([day,r],i)=>{if(r[f]===''||r[f]==null)return;ctx.beginPath();ctx.arc(xx(i),yy(Number(r[f])),4,0,7);ctx.fill()})});ctx.font='12px system-ui';ctx.fillStyle='#287f67';ctx.fillText('● 精神',w-160,15);ctx.fillStyle='#ca8879';ctx.fillText('● 疲勞',w-84,15);ctx.fillStyle='#77877d';data.forEach(([day],i)=>{if(i===0||i===data.length-1||i%3===0)ctx.fillText(day.slice(5),xx(i)-13,h-8)})}
+function render(){const all=Object.entries(db).sort((a,b)=>a[0].localeCompare(b[0]));let end=today();let d=new Date(end+'T12:00:00');const last14=[];const last7=[];for(let i=13;i>=0;i--){let z=new Date(d);z.setDate(d.getDate()-i);const date=[z.getFullYear(),String(z.getMonth()+1).padStart(2,'0'),String(z.getDate()).padStart(2,'0')].join('-');if(db[date])last14.push([date,db[date]])}for(let i=6;i>=0;i--){let z=new Date(d);z.setDate(d.getDate()-i);let date=[z.getFullYear(),String(z.getMonth()+1).padStart(2,'0'),String(z.getDate()).padStart(2,'0')].join('-');if(db[date])last7.push(db[date])}let es=last14.map(([k,v])=>v.energy).filter(x=>x!==''&&x!=null).map(Number);$('logged').textContent=last14.length;$('avg').textContent=es.length?(es.reduce((a,b)=>a+b,0)/es.length).toFixed(1)+'/10':'—';$('minutes').textContent=last7.reduce((n,r)=>n+(Number(r.movement)||0),0)+' 分';$('history').innerHTML=all.slice(-12).reverse().map(([k,r])=>`<tr><td>${k}</td><td>${r.sleep||'—'}</td><td>${r.wake||'—'}</td><td>${r.energy||'—'}</td><td>${r.fatigue||'—'}</td><td>${r.pain||'—'}</td></tr>`).join('')||'<tr><td colspan="6">還沒有紀錄</td></tr>';draw(last14)}
+$('date').value=today();$('date').addEventListener('change',putDay);$('save').onclick=store;$('clear').onclick=()=>{if(!confirm('清空這一天表單？已儲存的紀錄不會刪除，除非再按儲存。'))return;fields.filter(f=>f!=='date').forEach(f=>{if(checks.has(f))$(f).checked=false;else $(f).value=''});};$('csv').onclick=()=>{let heads=['date',...fields.filter(f=>f!=='date')],lines=[heads.map(csvCell).join(',')];for(let [date,r] of Object.entries(db).sort())lines.push(heads.map(h=>csvCell(h==='date'?date:r[h])).join(','));download('生活紀錄_'+today()+'.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8')};$('json').onclick=()=>download('生活紀錄備份_'+today()+'.json',JSON.stringify(db,null,2),'application/json');$('importBtn').onclick=()=>$('import').click();$('import').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{const candidate=JSON.parse(await f.text());if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))throw Error();if(!confirm('匯入會和現有紀錄合併，同日期會以備份覆蓋。確定？'))return;db={...db,...candidate};localStorage.setItem(key,JSON.stringify(db));putDay();render();alert('匯入完成')}catch(e){alert('不是有效的 JSON 備份')}e.target.value=''};$('erase').onclick=()=>{if(confirm('確定永久刪除這個瀏覽器內的所有紀錄？這個動作無法復原，建議先備份。')){db={};localStorage.removeItem(key);putDay();render()}};putDay();render();
+</script><script src="https://accounts.google.com/gsi/client" async defer></script><script>
+(()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const SCOPE='https://www.googleapis.com/auth/calendar.readonly';
+let accessToken=null, tokenClient=null, tokenExp=0, allEvents=[], calendars=[], lastSync=0, timer=null;
+const origin=location.origin;
+const userOrigin=(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname));
+const status=(message,kind)=>{$('gMessage').textContent=message;$('gStatus').textContent=kind||'資訊';};
+const n2=n=>String(n).padStart(2,'0');
+const ymd=d=>`${d.getFullYear()}-${n2(d.getMonth()+1)}-${n2(d.getDate())}`;
+const startOfDay=s=>new Date(`${s}T00:00:00`);
+const tFmt=d=>new Intl.DateTimeFormat('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false}).format(d);
+const safe=(x)=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('gClient').value=localStorage.getItem('lifestyle_google_client_id_v1')||'';
+$('gOriginNotice').textContent=userOrigin?`目前網頁來源：${origin}。請在 Google Cloud 的 Authorized JavaScript origins 加入這個來源（不是完整 HTML 路徑）。`:'目前是 file:// 或不支援的 HTTP 網址。請將檔案部署到 HTTPS 網址，或用 localhost 啟動網頁才能授權。';
+function fmtEvent(e){let start=e.start?.dateTime?new Date(e.start.dateTime):startOfDay(e.start?.date||'1970-01-01');let end=e.end?.dateTime?new Date(e.end.dateTime):startOfDay(e.end?.date||'1970-01-01');return {...e,_start:start,_end:end,_allDay:!e.start?.dateTime};}
+function selectedDate(){return $('date').value||ymd(new Date());}
+function eventForDate(e,date){let a=startOfDay(date),b=new Date(a);b.setDate(b.getDate()+1);return e._start<b && e._end>a;}
+function infer(e){const s=(e.summary||'').toLowerCase();return /家教|教學|tutor|學生|anne|tim|olivia|elsa|eason|星月|中崴/.test(s)?'teach':/podcast|剪輯/.test(s)?'edit':/羽球|匹克球|跳舞|舞蹈|運動|badminton|pickleball|dance/.test(s)?'exercise':/上班|實驗|研究助理|中研院|work|lab/.test(s)?'work':'other';}
+function suggest(events,date){let timed=events.filter(e=>!e._allDay),mins=timed.reduce((n,e)=>{let a=startOfDay(date),b=new Date(a);b.setDate(b.getDate()+1);return n+Math.max(0,(Math.min(e._end,b)-Math.max(e._start,a))/60000)},0);let latest=timed.length?new Date(Math.max(...timed.map(e=>e._end.getTime()))):null;
+let hasTeach=timed.some(e=>infer(e)==='teach'),hasExercise=timed.some(e=>infer(e)==='exercise'),hasEdit=timed.some(e=>infer(e)==='edit');let energy=Number(document.getElementById('energy').value),fatigue=Number(document.getElementById('fatigue').value),pain=Number(document.getElementById('pain').value);
+let busy=mins>=480||timed.length>=5;let notes=[];
+if(busy)notes.push('今天行程偏滿：不再追加學習／高強度活動，安排固定用餐和休息。');
+if(hasTeach)notes.push('有家教：出發前安排晚餐或攜帶可吃的正餐，課程結束後預留返家交通。');
+if(hasEdit)notes.push('Podcast 在家剪輯：不用算剪輯後返家通勤，結束就準備休息。');
+if(hasExercise)notes.push('有安排運動：依體力調整強度，活動前後補水並保留交通時間。');
+if((fatigue>=7)||(energy>0&&energy<=4)||pain>=6)notes.unshift('今天疲勞或疼痛較明顯：降低非必要行程；持續或加劇應就醫評估。');
+if(latest&&latest.getHours()>=21)notes.push('晚間結束較晚：避免再追加工作，優先洗漱與睡眠。');
+if(!timed.length)notes.push('目前沒有計時行程：可以把部分空檔保留給恢復，不必填滿。');
+if(!notes.length)notes.push('今天負荷適中：維持正常用餐、活動與睡眠，避免臨時塞滿空檔。');
+return {mins,latest,load:busy?'偏高':mins>=240?'中等':'較低',notes};}
+window.lifestylePlannerEvents=()=>({connected:!!accessToken,events:allEvents.map(e=>({...e})),calendarCount:selectedCalendarIds.size});
+function renderCalendar(){let date=selectedDate(),events=allEvents.filter(e=>eventForDate(e,date)).sort((a,b)=>a._start-b._start);$('gDate').textContent=`(${date})`;window.dispatchEvent(new Event('lifestyle-calendar-changed'));let summary=suggest(events,date);$('gCount').textContent=accessToken?events.length:'—';$('gHours').textContent=accessToken?(summary.mins/60).toFixed(1)+' h':'—';$('gLoad').textContent=accessToken?summary.load:'—';
+if(!accessToken){$('gEvents').textContent='尚未連線 Google Calendar。';$('gAdvice').textContent='登入後將依所選日期顯示當天建議。';return;}
+$('gEvents').innerHTML=events.length?events.map(e=>`<div class="schedule"><b>${e._allDay?'全天':`${tFmt(e._start)}–${tFmt(e._end)}`}</b><span><strong>${safe(e.summary||'（無標題）')}</strong><span class="muted" style="display:block">${safe(e._calName||'行事曆')}${e.location?' · '+safe(e.location):''}</span></span></div>`).join(''):'本日沒有同步到行程。';
+const overlaps=[];const timed=events.filter(e=>!e._allDay);for(let i=1;i<timed.length;i++){let gap=(timed[i]._start-timed[i-1]._end)/60000;let a=timed[i-1],b=timed[i];if(gap<0)overlaps.push(`「${a.summary||'前一行程'}」與「${b.summary||'後一行程'}」時間重疊。`);else if(gap<60 && a.location && b.location && a.location!==b.location) overlaps.push(`「${a.summary||'前一行程'}」→「${b.summary||'後一行程'}」間隔只有 ${Math.round(gap)} 分鐘，若跨地點需約 60 分鐘，請確認是否來得及。`);}
+$('gAdvice').innerHTML=[...overlaps,...summary.notes].map(x=>`<div style="margin-bottom:8px">• ${safe(x)}</div>`).join('');}
+async function api(url){let response=await fetch(url,{headers:{Authorization:'Bearer '+accessToken}});if(response.status===401){accessToken=null;status('授權已過期，請重新點選「使用 Google 授權讀取」。','需重新登入');$('gRefresh').disabled=true;throw Error('Google 授權過期')}if(!response.ok){let body;try{body=await response.json()}catch{}throw Error(body?.error?.message||`Google API 回應 ${response.status}`)}return response.json()}
+async function listCalendars(){let items=[],page='';do{let u=new URL('https://www.googleapis.com/calendar/v3/users/me/calendarList');u.searchParams.set('maxResults','250');if(page)u.searchParams.set('pageToken',page);const r=await api(u);items.push(...(r.items||[]).filter(x=>!x.deleted));page=r.nextPageToken||''}while(page);return items}
+async function listEvents(cal,lo,hi){let items=[],page='';do{let u=new URL('https://www.googleapis.com/calendar/v3/calendars/'+encodeURIComponent(cal.id)+'/events');u.searchParams.set('timeMin',lo);u.searchParams.set('timeMax',hi);u.searchParams.set('singleEvents','true');u.searchParams.set('orderBy','startTime');u.searchParams.set('maxResults','2500');u.searchParams.set('showDeleted','false');if(page)u.searchParams.set('pageToken',page);let r=await api(u);items.push(...(r.items||[]).filter(x=>x.status!=='cancelled').map(x=>({...fmtEvent(x),_calName:cal.summary||cal.id})));page=r.nextPageToken||''}while(page);return items}
+const CAL_PREF_KEY='lifestyle_gcal_selected_ids_v2';
+let selectedCalendarIds=new Set();
+function saveCalendarSelection(){
+ localStorage.setItem(CAL_PREF_KEY,JSON.stringify([...selectedCalendarIds]));
+ $('gSelectedCount').textContent='已選 '+selectedCalendarIds.size+' / '+calendars.length+' 個';
+}
+function populate(){
+ const root=$('gCalendar');root.replaceChildren();
+ let remembered=[];
+ try{const parsed=JSON.parse(localStorage.getItem(CAL_PREF_KEY)||'[]');if(Array.isArray(parsed))remembered=parsed.filter(x=>typeof x==='string');}catch(e){}
+ selectedCalendarIds=new Set(remembered.filter(id=>calendars.some(cal=>cal.id===id)));
+ for(const cal of calendars){
+  const line=document.createElement('label');line.className='check';
+  const input=document.createElement('input');input.type='checkbox';input.value=cal.id;input.checked=selectedCalendarIds.has(cal.id);
+  const name=document.createElement('span');name.textContent=cal.summary||cal.id;
+  line.append(input,name);root.append(line);
+  input.addEventListener('change',()=>{
+   if(input.checked)selectedCalendarIds.add(cal.id);else selectedCalendarIds.delete(cal.id);
+   saveCalendarSelection();refresh();
+  });
+ }
+ $('gSelectAll').disabled=false;$('gSelectNone').disabled=false;
+ saveCalendarSelection();
+}
+async function refresh(){if(!accessToken)return;try{$('gRefresh').disabled=true;status('正在讀取行事曆…','同步中');const focus=startOfDay(selectedDate());const lo=new Date(focus.getFullYear(),focus.getMonth()-1,24);const hi=new Date(focus.getFullYear(),focus.getMonth()+2,8);const wanted=calendars.filter(c=>selectedCalendarIds.has(c.id));if(!wanted.length){allEvents=[];lastSync=Date.now();renderCalendar();window.dispatchEvent(new Event('lifestyle-calendar-refreshed'));status('請勾選至少一個要同步的行事曆；目前未讀取任何活動。','已連線');return;}const results=await Promise.allSettled(wanted.map(c=>listEvents(c,lo.toISOString(),hi.toISOString())));allEvents=results.filter(r=>r.status==='fulfilled').flatMap(r=>r.value);const failed=results.filter(r=>r.status==='rejected');lastSync=Date.now();renderCalendar();window.dispatchEvent(new Event('lifestyle-calendar-refreshed'));status(`已同步 ${wanted.length-failed.length}/${wanted.length} 個行事曆，共 ${allEvents.length} 筆。更新時間 ${new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'})}${failed.length?'；有行事曆讀取失敗，請確認權限。':''}`,'已連線');}catch(e){status('同步失敗：'+e.message,'錯誤')}finally{$('gRefresh').disabled=!accessToken}}
+async function onToken(r){if(r.error){status('Google 授權失敗：'+r.error,'錯誤');return}if(!r.access_token){status('未取得 Google 授權碼。','錯誤');return}accessToken=r.access_token;tokenExp=Date.now()+Number(r.expires_in||3000)*1000;$('gDisconnect').disabled=false;$('gRefresh').disabled=false;try{calendars=await listCalendars();if(!calendars.length){status('這個 Google 帳戶沒有可讀的行事曆。','提示');return}populate();await refresh()}catch(e){status('取得行事曆失敗：'+e.message,'錯誤')}}
+$('gConnect').onclick=()=>{if(!userOrigin){status('此檔案必須部署至 HTTPS 或 localhost 才能 Google 授權。','需部署');return}const id=$('gClient').value.trim();if(!/^[a-zA-Z0-9-]+\.apps\.googleusercontent\.com$/.test(id)){status('請輸入有效的 Google OAuth Web Client ID。','設定錯誤');return}if(!window.google?.accounts?.oauth2){status('Google 登入程式尚未載入。請確認網路與瀏覽器封鎖設定。','載入失敗');return}localStorage.setItem('lifestyle_google_client_id_v1',id);try{tokenClient=google.accounts.oauth2.initTokenClient({client_id:id,scope:SCOPE,callback:onToken,error_callback:e=>status('登入視窗失敗：'+(e.type||'已關閉或遭封鎖'),'未登入')});tokenClient.requestAccessToken({prompt:'consent'});}catch(e){status('登入初始化失敗：'+e.message,'錯誤')}};
+$('gRefresh').onclick=refresh;
+$('gSelectAll').onclick=()=>{selectedCalendarIds=new Set(calendars.map(c=>c.id));populateWithCurrentSelection();refresh()};
+$('gSelectNone').onclick=()=>{selectedCalendarIds.clear();populateWithCurrentSelection();refresh()};
+function populateWithCurrentSelection(){const checks=$('gCalendar').querySelectorAll('input[type=checkbox]');checks.forEach(input=>{input.checked=selectedCalendarIds.has(input.value)});saveCalendarSelection()}
+$('gDisconnect').onclick=()=>{if(accessToken&&window.google?.accounts?.oauth2?.revoke){try{google.accounts.oauth2.revoke(accessToken,()=>{})}catch(e){}}accessToken=null;tokenClient=null;tokenExp=0;allEvents=[];calendars=[];window.dispatchEvent(new Event('lifestyle-calendar-refreshed'));selectedCalendarIds.clear();$('gCalendar').textContent='連線後載入行事曆';$('gSelectedCount').textContent='已選 0 個';$('gSelectAll').disabled=true;$('gSelectNone').disabled=true;$('gRefresh').disabled=true;$('gDisconnect').disabled=true;status('已中斷目前連線並撤銷此存取權杖；若要移除已授權的應用程式，可到 Google 帳戶的第三方連結設定。','未連線');renderCalendar()};
+$('date').addEventListener('change',()=>{if(accessToken)refresh();else renderCalendar()});
+['energy','fatigue','pain'].forEach(id=>$(id).addEventListener('input',renderCalendar));
+$('save').addEventListener('click',renderCalendar);
+window.setInterval(()=>{if(accessToken&&Date.now()-lastSync>=5*60*1000){if(Date.now()>tokenExp-30000){status('Google 授權即將／已過期，請重新按 Google 授權。','需重新登入');return}refresh()}},60*1000);
+renderCalendar();
+})();
+</script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const STORAGE='lifestyle_tracker_routines_v1';
+const todayLocal=()=>{
+ const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
+};
+const defaults={
+ daily:[
+ ['morning','起床後接觸光線、離開床鋪','比起提早到 06:00，更重要的是能從容出門'],
+ ['out','出門前留 10–15 分鐘緩衝','上班日目標 08:45 前出門；跨地點需另排通勤'],
+ ['breakfast','吃早餐或準備簡單晨間補充','豆漿、雞蛋、吐司等，避免忙到完全沒吃'],
+ ['lunch','吃一份完整午餐','保留你已有的飯、菜、肉的午餐習慣'],
+ ['dinner','有吃到足夠晚餐','晚間家教可提前吃，不必硬等到回家'],
+ ['water','留意飲水及身體感受','喝水量依活動量、天氣及個人狀況調整'],
+ ['wash','完成適合自己的洗澡／清潔流程','早上洗能清醒也可以，核心是不壓縮睡眠'],
+ ['rest','有留一段真正的恢復時間','不需要每天額外學習、運動或家事'],
+ ['prepare','睡前準備明天的衣物、包包與用品','簡化隔天早上的決策']
+ ],
+ weekly:[
+ ['aerobic','累積有氧運動 120 分鐘','跳舞、羽球、匹克球等；目前疲倦時可分段漸進'],
+ ['restnight','安排至少一個不加工作的晚上','優先週三或週四，不用填滿每個空檔'],
+ ['meals','補足接下來 2–3 天的簡單食材','避免每天晚上重煮；熟食注意冷藏冷凍衛生'],
+ ['laundry','洗衣／整理衣物一次','依需求增加，不必堆到耗費整個週末'],
+ ['floor','地板基本清潔','貓咪活動區域可視情況提高頻率'],
+ ['kitchen','清潔流理台、廚房與冰箱食物檢查','確認剩菜保存與需要採買的食材'],
+ ['family','和重要的人聯絡或保留相處時間','不是新的硬性責任'],
+ ['learn','保留一次自己有興趣的學習或練習','R、英文、閱讀、爵士鼓擇一；有餘裕再加']
+ ],
+ monthly:[
+ ['brush','更換或檢查牙刷刷頭','依刷毛磨損情況決定是否更換'],
+ ['washer','清潔洗衣機與濾網','按照設備說明及實際使用情況'],
+ ['fridge','清潔冰箱與過期食品檢查','檢查冷凍庫存，不勉強每月清空'],
+ ['bath','浴室深度清潔','包含容易發霉或積垢的區域'],
+ ['closet','衣櫃與居家用品整理','一次做一個區域即可'],
+ ['budget','檢視支出、家教收入及下月預算','把房租、通勤、飲食與必要支出先保留'],
+ ['goals','檢查下個月的工作、休息與生活目標','目標要能配合身體狀況和真實行程'],
+ ['health','回顧疲勞、經期與疼痛紀錄','如果疲倦持續影響生活，安排醫師評估']
+ ]
+};
+const normalize=(raw)=>{
+ const out={items:{},done:{}};
+ for(const type of ['daily','weekly','monthly']){
+  const list=Array.isArray(raw?.items?.[type])?raw.items[type]:defaults[type];
+  out.items[type]=list.filter(x=>Array.isArray(x)&&typeof x[0]==='string'&&typeof x[1]==='string').slice(0,100).map(x=>[x[0],x[1],String(x[2]||'')]);
+ }
+ if(raw?.done&&typeof raw.done==='object'&&!Array.isArray(raw.done)){
+  for(const [k,v] of Object.entries(raw.done).slice(0,450)){
+   if(Array.isArray(v))out.done[k]=v.filter(x=>typeof x==='string').slice(0,100);
+  }
+ }
+ return out;
+};
+let state;
+try{state=normalize(JSON.parse(localStorage.getItem(STORAGE)||'null'))}catch(e){state=normalize(null)}
+let mode='daily';
+const period=()=>{
+ const date=String($('date')?.value||todayLocal());
+ const d=new Date(date+'T12:00:00');
+ if(Number.isNaN(d.valueOf()))return todayLocal();
+ if(mode==='daily')return date;
+ if(mode==='monthly')return date.slice(0,7);
+ const weekday=(d.getDay()+6)%7;
+ d.setDate(d.getDate()-weekday);
+ return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')+'（週起始）';
+};
+const save=()=>localStorage.setItem(STORAGE,JSON.stringify(state));
+function render(){
+ for(const [name,id] of [['daily','routineDaily'],['weekly','routineWeekly'],['monthly','routineMonthly']]){
+  $(id).classList.toggle('active',name===mode);$(id).setAttribute('aria-pressed',String(name===mode));
+ }
+ const p=period(),key=mode+'|'+p,list=state.items[mode],done=new Set(state.done[key]||[]);
+ const doneCount=list.filter(x=>done.has(x[0])).length;
+ $('routinePeriod').textContent=mode==='daily'?p:mode==='weekly'?'本週｜'+p:'本月｜'+p;
+ $('routineCount').textContent=`已完成 ${doneCount} / ${list.length} 項`;
+ $('routineBar').style.width=(list.length?doneCount/list.length*100:0)+'%';
+ $('routineList').replaceChildren();
+ for(const item of list){
+  const [id,title,desc]=item;
+  const line=document.createElement('div');line.className='routine-item'+(done.has(id)?' done':'');
+  const input=document.createElement('input');input.type='checkbox';input.checked=done.has(id);input.setAttribute('aria-label',title);
+  input.addEventListener('change',()=>{
+   const current=new Set(state.done[key]||[]);
+   if(input.checked)current.add(id);else current.delete(id);
+   state.done[key]=[...current];save();render();
+  });
+  const main=document.createElement('div');main.className='routine-text';
+  const name=document.createElement('div');name.className='routine-title';name.textContent=title;main.append(name);
+  if(desc){const note=document.createElement('div');note.className='routine-description';note.textContent=desc;main.append(note)}
+  const remove=document.createElement('button');remove.type='button';remove.textContent='移除';
+  remove.setAttribute('aria-label','移除 '+title);
+  remove.addEventListener('click',()=>{
+   if(!confirm('確定從'+(mode==='daily'?'每日':mode==='weekly'?'每週':'每月')+'清單移除「'+title+'」？'))return;
+   state.items[mode]=state.items[mode].filter(x=>x[0]!==id);save();render();
+  });
+  line.append(input,main,remove);$('routineList').append(line);
+ }
+}
+for(const [m,id] of [['daily','routineDaily'],['weekly','routineWeekly'],['monthly','routineMonthly']]){
+ $(id).addEventListener('click',()=>{mode=m;render()});
+}
+$('routineAdd').onclick=()=>{
+ const box=$('routineNew'),name=box.value.trim();if(!name)return;
+ if(state.items[mode].length>=100){alert('最多可加入 100 項');return;}
+ state.items[mode].push(['user_'+Date.now()+'_'+Math.random().toString(36).slice(2),name,'自訂習慣']);
+ box.value='';save();render();
+};
+$('routineNew').addEventListener('keydown',e=>{if(e.key==='Enter'){$('routineAdd').click()}});
+$('routineReset').onclick=()=>{
+ if(!confirm('只重設目前這個日期／週／月的勾選紀錄？'))return;
+ delete state.done[mode+'|'+period()];save();render();
+};
+function downloadFile(name,text){
+ const blob=new Blob([text],{type:'application/json;charset=utf-8'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('routineBackup').onclick=()=>downloadFile('生活習慣清單_'+todayLocal()+'.json',JSON.stringify({version:1,...state},null,2));
+$('routineImportBtn').onclick=()=>$('routineImport').click();
+$('routineImport').onchange=async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  const raw=JSON.parse(await file.text());
+  if(!raw||typeof raw!=='object'||!raw.items||!raw.done)throw Error('格式不符');
+  if(confirm('確定匯入習慣清單並取代現有習慣勾選與自訂項目？')){
+   state=normalize(raw);save();render();alert('匯入成功');
+  }
+ }catch(err){alert('習慣備份格式不正確')}
+ e.target.value='';
+};
+$('date')?.addEventListener('change',render);
+render();
+})();
+</script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id),STORE='lifestyle_smart_plan_prefs_v1';
+const dayMin=t=>{const a=String(t).split(':').map(Number);return a[0]*60+(a[1]||0)};
+const time=m=>{m=Math.round(m);const add=m>=1440?' +1日':'';m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')+add};
+const dateKey=()=> $('date').value||new Date().toLocaleDateString('sv-SE');
+const kindOf=e=>{const s=(e.summary||'').toLowerCase();if(/podcast|剪輯/.test(s))return'edit';if(/家教|教學|tutor|anne|tim|olivia|elsa|eason|星月|中崴/.test(s))return'tutor';if(/羽球|匹克球|跳舞|運動|badminton|dance|pickleball/.test(s))return'sport';if(/上班|工作|研究|實驗|中研院|western|wb|rna|pcr|seminar|lab|meeting|ppt|報告/.test(s))return'office';return'other'};
+const settingsIds=['planCommute','planWorkEnd','planMorning','planSleep','planWork','planAuto'];
+let prefs={};try{prefs=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch{}
+for(const id of settingsIds){if(prefs[id]!=null){const el=$(id);if([...el.options||[]].some(x=>x.value===String(prefs[id]))||el.type==='number')el.value=prefs[id]}}
+const state=()=>Object.fromEntries(settingsIds.map(id=>[id,$(id).value]));
+const localDateToMinutes=(dt,date)=>{const d=new Date(dt),a=new Date(date+'T00:00:00');return Math.round((d-a)/60000)};
+function known(day){
+ const list={0:[['18:00','20:00','國一數學家教（參考）','tutor']],1:[['18:00','21:00','國一數學家教（參考）','tutor']],4:[['20:00','22:00','Podcast 在家剪輯（參考）','edit']],5:[['10:00','14:00','週六家教（參考）','tutor'],['16:00','18:00','高中家教（參考）','tutor']],6:[['10:00','14:00','高中家教（參考）','tutor']]};
+ return (list[day]||[]).map(a=>({a:dayMin(a[0]),b:dayMin(a[1]),title:a[2],type:a[3],place:a[3]==='edit'?'home':'offsite',source:'已知慣例 · 請確認當週'}));
+}
+function collect(date,config){
+ const day=new Date(date+'T12:00:00').getDay(),weekday=day>0&&day<6;
+ const snapshot=window.lifestylePlannerEvents?.()||{connected:false,events:[],calendarCount:0};
+ const hasSelected=!!snapshot.connected&&snapshot.calendarCount>0;
+ const rows=[];
+ for(const e of snapshot.events){
+  if(e._allDay)continue;
+  let a=localDateToMinutes(e._start,date),b=localDateToMinutes(e._end,date);
+  if(!Number.isFinite(a)||!Number.isFinite(b)||b<=0||a>=1440)continue;
+  a=Math.max(0,a);b=Math.min(1440,b);if(b<=a)continue;
+  const type=kindOf(e),place=type==='edit'?'home':type==='office'?'office':type==='tutor'||type==='sport'?'offsite':e.location?'offsite':'unknown';
+  rows.push({a,b,title:e.summary||'未命名行程',type,place,source:e._calName||'Google Calendar'});
+ }
+ const auto=config.planAuto==='yes';
+ if(auto){
+  for(const e of known(day)){
+   // Only add known template if a genuine calendar entry with same kind and approximately same interval isn't already present
+   if(!rows.some(x=>x.type===e.type&&Math.abs(x.a-e.a)<100))rows.push(e);
+  }
+ }
+ if(weekday&&config.planWork==='yes'){
+  const b=dayMin(config.planWorkEnd),a=600;
+  rows.push({a,b,title:'中研院工作時段（預設，可調整）',type:'workblock',place:'office',source:'個人預設；不是 Google 行程'});
+ }
+ return {rows:rows.sort((x,y)=>x.a-y.a||x.b-y.b),hasSelected,weekday,day};
+}
+function generate(){
+ const date=dateKey(),cfg=state(),commute=Math.max(0,Math.min(180,Number(cfg.planCommute)||0));
+ const {rows,hasSelected,weekday,day}=collect(date,cfg);
+ const warnings=[],items=[];const morning=cfg.planMorning;
+ const shower=morning==='full'?40:morning==='rinse'?10:0;
+ const prep=morning==='full'?18:morning==='rinse'?22:30;
+ const morningTotal=shower+prep+12+10;
+ const earliest=rows.filter(r=>r.type!=='workblock').reduce((a,r)=>Math.min(a,r.a),Infinity);
+ const firstDest=(rows.find(r=>r.type==='workblock')||rows.find(r=>r.place==='offsite'||r.place==='office'));
+ // Workday 10:00 uses a 15-minute arrival buffer; classes scheduled before work override it.
+ const firstExternal=rows.filter(r=>r.place==='office'||r.place==='offsite').sort((a,b)=>a.a-b.a)[0];
+ const earliestAnchor=firstExternal?.a??(weekday?600:Infinity);
+ let depart=Number.isFinite(earliestAnchor)?earliestAnchor-commute-10:null;
+ // For weekend tutoring, leave enough time; for all at-home activities don't invent commuting
+ let wake=depart!==null?depart-morningTotal:(day===0||day===6?540:day===5?480:495);
+ wake=Math.max(330,Math.min(wake,570));
+ if(depart!==null&&wake+morningTotal>depart)warnings.push('早晨準備時間不足，請調整清潔流程或更早起床；不應以犧牲必要睡眠為代價。');
+ const localNote=shower?morning==='full'?'早上保留完整洗頭與吹髮':'晚上洗頭，早上短暫沖澡':'晚上洗澡，早上簡單洗漱';
+ add(wake,wake+Math.max(5,shower+prep),'起床、清潔與整理',localNote,'health','建議');
+ add(wake+shower+prep,wake+shower+prep+12,'簡單早餐','可攜帶，不必開火','health','建議');
+ if(depart!==null){add(depart,depart+commute,'前往第一個地點','預估通勤 '+commute+' 分鐘','travel','預估');}
+ // Fixed commitments and optional inferred commutes between separate sites
+ let fixed=rows.filter(r=>r.type!=='workblock');
+ for(const r of rows){add(r.a,r.b,r.title,r.source,r.type==='workblock'?'busy':'busy',r.type==='workblock'?'工作預設':'固定行程');}
+ const placedTrips=[];
+ const core=rows.filter(r=>r.place==='office'||r.place==='offsite'||r.place==='home').sort((a,b)=>a.a-b.a);
+ let previous=null;
+ for(const r of core){
+  if(!previous){previous=r;continue}
+  const isInsideWork=previous.type==='workblock'&&r.type==='office'&&r.a>=previous.a&&r.b<=previous.b;
+  const isWorkWithin= r.type==='workblock'&&previous.type==='office'&&previous.a>=r.a&&previous.b<=r.b;
+  const placeChange=previous.place!==r.place&&previous.place!=='unknown'&&r.place!=='unknown';
+  if(placeChange&&r.place!=='home'&&!isInsideWork&&!isWorkWithin){
+   const gap=r.a-previous.b;
+   if(gap<commute)warnings.push('「'+previous.title+'」→「'+r.title+'」僅隔 '+Math.max(0,gap)+' 分鐘，預估跨地點需要 '+commute+' 分鐘。請確認是否能提早離開或調整活動。');
+   else if(gap>=commute&&gap<480){let a=r.a-commute;add(a,r.a,'前往下一個地點','預估交通時間，依實際路線調整','travel','預估');placedTrips.push([a,r.a])}
+  }
+  // Keep end of work as preceding obligation even when other meetings appear during work
+  if(r.b>previous.b||r.type==='workblock')previous=r;
+ }
+ // Explicit commute after last outside event to home, unless last activity is at home
+ const lastOutside=rows.filter(r=>r.place==='office'||r.place==='offsite').sort((a,b)=>b.b-a.b)[0];
+ const latestHome=rows.filter(r=>r.place==='home').sort((a,b)=>b.b-a.b)[0];
+ let homeTime=lastOutside?lastOutside.b+commute:Math.max(19*60,rows.reduce((m,r)=>Math.max(m,r.b),0));
+ if(lastOutside&&(!latestHome||latestHome.a>=lastOutside.b+commute)){
+  if(lastOutside.b+commute<=1440){add(lastOutside.b,lastOutside.b+commute,'回家通勤','預估 '+commute+' 分鐘','travel','預估')}
+ }else if(latestHome)homeTime=Math.max(homeTime,latestHome.b);
+ // Occupancy: block non-work Google events, default work slot, and travel
+ const occupied=()=>items.filter(i=>['busy','travel'].includes(i.kind));
+ function free(a,b){return !occupied().some(i=>a<i.b&&i.a<b)}
+ function placeNear(title,length,from,to,prefer,desc){
+  const choices=[];
+  for(let start=from;start+length<=to;start+=5){if(free(start,start+length))choices.push(start)}
+  if(!choices.length)return false;
+  choices.sort((a,b)=>Math.abs(a-prefer)-Math.abs(b-prefer));
+  const a=choices[0];add(a,a+length,title,desc,'health','建議');return true;
+ }
+ // Do not place a meal over a fixed work block: meal breaks may happen inside work, so explicitly allow short breaks inside work only
+ function meal(title,length,from,to,prefer,desc){
+  const fixedBusy=items.filter(i=>i.kind==='travel'||(i.kind==='busy'&&i.label!=='工作預設'));
+  const candidates=[];
+  for(let a=from;a+length<=to;a+=10){if(!fixedBusy.some(i=>a<i.b&&i.a<a+length)&&!items.filter(i=>i.kind==='health').some(i=>a<i.b&&i.a<a+length))candidates.push(a)}
+  if(!candidates.length){warnings.push('無法為「'+title+'」找出不撞行程的時間，請提前用餐或攜帶食物。');return}
+  candidates.sort((a,b)=>Math.abs(a-prefer)-Math.abs(b-prefer));add(candidates[0],candidates[0]+length,title,desc,'health','建議');
+ }
+ meal('午餐與短暫休息',35,660,870,750,'盡量吃有飯、菜、蛋白質的正餐');
+ const eveningTut=rows.find(r=>r.type==='tutor'&&r.a>=1020&&r.a<=1260);
+ meal('晚餐',30,eveningTut?960:1050,eveningTut?Math.min(eveningTut.a,1110):1290,eveningTut?990:1140,eveningTut?'家教前先吃，避免到家太晚才用餐':'留出完整用餐時間，不用只靠麵包');
+ const energy=Number($('energy')?.value||5),fatigue=Number($('fatigue')?.value||0),pain=Number($('pain')?.value||0);
+ const low=energy<=4||fatigue>=7||pain>=5;
+ const fixedMinutes=rows.filter(r=>r.type!=='workblock').reduce((n,r)=>n+r.b-r.a,0);
+ const dense=rows.length>=5||fixedMinutes>=360||rows.some(r=>r.b>=21*60);
+ if(!dense&&!low){
+  const alreadySport=rows.some(r=>r.type==='sport');
+  if(!alreadySport&&day===4){placeNear('可選：有氧活動',30,1080,1260,1140,'依體力，可選快走／羽球／跳舞；需另算交通');}
+  else if(!alreadySport&&day===3){placeNear('可選：運動／興趣',40,1080,1320,1170,'今天若有精神才做，否則改成休息');}
+ }
+ // Time for night routine: after late obligations, never pretend that bedtime is achievable
+ const lastEnd=items.filter(i=>['travel','busy'].includes(i.kind)).reduce((x,i)=>Math.max(x,i.b),0);
+ const windStart=Math.max(1320,lastEnd+5);
+ if(windStart+35<=1470)add(windStart,windStart+30,'睡前收尾與休息','盡量不再新增備課、家事與工作','health','建議');
+ const sleepOpportunity=Number(cfg.planSleep)*60;
+ const bed=Math.max(windStart+30,1380);
+ add(bed,bed+sleepOpportunity,'睡眠機會（目標）','建議約 '+cfg.planSleep+' 小時；實際睡著時間仍需記錄','health','目標');
+ if(bed+sleepOpportunity>1440+wake){warnings.push('依今天的行程與早晨出門時間，可能無法達到 '+cfg.planSleep+' 小時睡眠機會。優先調整非必要活動、下班或課程安排。')}
+ if(low)warnings.push('今天的精力／疲勞／疼痛紀錄偏高負荷：運動和學習改為可選，避免硬塞進所有空檔。');
+ if(weekday&&rows.some(r=>r.type==='tutor'&&r.a<dayMin(cfg.planWorkEnd)+commute&&r.a>=960))warnings.push('中研院下班至家教開始可能沒有完整通勤時間：請確認是否提早離開，不能假設已能銜接。');
+ items.sort((a,b)=>a.a-b.a||a.b-b.b);
+ $('planLoad').textContent=low?'優先恢復':dense?'高負荷':'一般負荷';
+ $('planSummary').textContent=(hasSelected?'已使用目前勾選的 Google Calendar 行程；':'目前未讀取到已選的 Google 行事曆；')+(cfg.planAuto==='yes'?'同時加入未被同步覆蓋的已知家教／剪輯參考。':'不補入家教模板。')+' 這份計畫包含通勤、用餐與睡眠建議，但所有衝突仍須你確認。';
+ $('planWarnings').replaceChildren();if(warnings.length){const w=document.createElement('div');w.className='plan-warnings';const title=document.createElement('strong');title.textContent='⚠️ 需要注意的地方';w.append(title);for(const issue of [...new Set(warnings)]){const p=document.createElement('div');p.textContent='• '+issue;w.append(p)}$('planWarnings').append(w)}
+ $('planItems').replaceChildren();
+ for(const it of items){
+  if(it.a>=1500)continue;
+  const row=document.createElement('div');row.className='plan-line '+it.kind;
+  const t=document.createElement('div');t.className='plan-time';t.textContent=time(it.a)+'–'+time(it.b);
+  const body=document.createElement('div');body.className='plan-body';
+  const name=document.createElement('div');name.className='plan-title';name.textContent=it.title;
+  const desc=document.createElement('div');desc.className='plan-desc';desc.textContent=it.desc;
+  const tag=document.createElement('span');tag.className='plan-kind';tag.textContent=it.label;
+  body.append(name,desc,tag);row.append(t,body);$('planItems').append(row);
+ }
+ window.__lifestylePlan={date,items,issues:warnings};
+ function add(a,b,title,desc,kind,label){if(!Number.isFinite(a)||!Number.isFinite(b)||b<=a)return;items.push({a,b,title,desc,kind,label})}
+}
+// The rows store absolute local clock minutes; the generated sleep block can continue to the next morning.
+for(const id of settingsIds)$(id).addEventListener('change',()=>{localStorage.setItem(STORE,JSON.stringify(state()));generate()});
+$('planGenerate').onclick=generate;
+$('date').addEventListener('change',generate);
+['energy','fatigue','pain'].forEach(id=>$(id).addEventListener('input',generate));
+window.addEventListener('lifestyle-calendar-changed',generate);
+$('planCopy').onclick=()=>{const p=window.__lifestylePlan;if(!p)return;const lines=['我的一日生活計畫：'+p.date,...p.items.map(i=>time(i.a)+'–'+time(i.b)+'｜'+i.title+'（'+i.label+'）'),...p.issues.map(i=>'⚠️ '+i)];navigator.clipboard?.writeText(lines.join('\n')).then(()=>alert('已複製今日計畫')).catch(()=>{const ta=document.createElement('textarea');ta.value=lines.join('\n');document.body.append(ta);ta.select();document.execCommand('copy');ta.remove();alert('已複製')})};
+$('planIcs').onclick=()=>{const p=window.__lifestylePlan;if(!p)return;const pad=n=>String(n).padStart(2,'0'),dt=(mins)=>{const d=new Date(p.date+'T00:00:00');d.setMinutes(mins);return ''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00'};const esc=s=>String(s).replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;');let lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LifestyleTracker//Daily Plan//ZH'];for(const [index,item]of p.items.entries()){if(item.label==='固定行程'||item.label==='工作預設')continue;lines.push('BEGIN:VEVENT','UID:lt-'+p.date+'-'+index+'@local','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'').replace(/Z$/,'Z'),'DTSTART:'+dt(item.a),'DTEND:'+dt(item.b),'SUMMARY:'+esc('生活建議｜'+item.title),'DESCRIPTION:'+esc(item.desc),'END:VEVENT')}lines.push('END:VCALENDAR');const blob=new Blob([lines.join('\r\n')+'\r\n'],{type:'text/calendar;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='生活建議_'+p.date+'.ics';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)};
+generate();
+})();
+</script><script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const key='lifestyle_reset_records_v1',habitKey='lifestyle_tracker_routines_v1';
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>new Date((s||iso(new Date()))+'T12:00:00');
+const same=(a,b)=>a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+let displayMonth=new Date();displayMonth.setDate(1);let current='calendar';
+const views=['calendar','day','habits','insights','settings'];
+// Move the old functional sections intact so the existing selectors and event handlers continue working.
+const main=$('appMain');
+const legacy=[...main.children].filter(x=>x.matches('section.panel'));
+const rhythm=legacy[0];const google=$('googlePanel');const health=legacy.find(x=>!!x.querySelector('#date'));
+const smart=$('smartPlanPanel'),routine=$('routinePanel'),trend=legacy.find(x=>!!x.querySelector('#chart'));
+const medical=legacy.find(x=>x.textContent.includes('先保護身體'));
+const backup=$('privacyPanel');
+for(const el of [rhythm,smart,health,medical])if(el)$('view-day').append(el);
+if(routine)$('view-habits').append(routine);
+if(trend)$('view-insights').append(trend);
+for(const el of [backup,google])if(el)$('view-settings').append(el);
+const page=(name)=>{if(!views.includes(name))return;current=name;views.forEach(v=>{$('view-'+v).classList.toggle('active',v===name)});document.querySelectorAll('[data-nav]').forEach(b=>{b.classList.toggle('active',b.dataset.nav===name);b.setAttribute('aria-current',b.dataset.nav===name?'page':'false')});window.scrollTo({top:0,behavior:'instant'});if(name==='calendar')renderCalendar();};
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>page(b.dataset.nav)));
+const selected=()=>String($('date').value||iso(new Date()));
+function records(){try{return JSON.parse(localStorage.getItem(key)||'{}')||{}}catch{return {}}}
+function habits(){try{return JSON.parse(localStorage.getItem(habitKey)||'{}')||{}}catch{return {}}}
+function dayEvents(date){const src=window.lifestylePlannerEvents?.();return (src?.events||[]).filter(e=>{const start=new Date(e._start),end=new Date(e._end);return start<new Date(date+'T00:00:00').getTime()+86400000&&end>new Date(date+'T00:00:00').getTime()}).sort((a,b)=>new Date(a._start)-new Date(b._start))}
+function habitCount(date){const h=habits();const k='daily|'+date;return Array.isArray(h.done?.[k])?h.done[k].length:0}
+function choose(date){$('date').value=date;$('date').dispatchEvent(new Event('change',{bubbles:true}));page('day')}
+function renderCalendar(){
+ const year=displayMonth.getFullYear(),month=displayMonth.getMonth(),first=new Date(year,month,1),count=new Date(year,month+1,0).getDate(),start=(first.getDay()+6)%7;
+ $('monthTitle').textContent=year+' 年 '+(month+1)+' 月';$('monthGrid').replaceChildren();const db=records(),selectedDay=selected(),now=new Date();
+ const source=window.lifestylePlannerEvents?.();
+ for(let pos=0;pos<42;pos++){
+  const d=new Date(year,month,1-start+pos),date=iso(d),dayRecords=db[date],events=dayEvents(date),countHabits=habitCount(date);
+  const b=document.createElement('button');b.type='button';b.className='month-cell'+(d.getMonth()!==month?' other-month':'')+(same(d,now)?' today-date':'')+(date===selectedDay?' picked':'');b.setAttribute('aria-label',date+'，'+events.length+' 筆行程，'+(dayRecords?'有健康紀錄':'無健康紀錄'));b.onclick=()=>choose(date);
+  const head=document.createElement('div');head.className='month-number';head.textContent=String(d.getDate());b.append(head);
+  const dots=document.createElement('div');dots.className='month-dots';
+  if(events.length){let dot=document.createElement('span');dot.className='month-dot';dots.append(dot)}
+  if(dayRecords){let dot=document.createElement('span');dot.className='month-dot health';dots.append(dot)}
+  if(countHabits){let dot=document.createElement('span');dot.className='month-dot habits';dots.append(dot)}
+  b.append(dots);
+  if(events.length){const e=document.createElement('div');e.className='month-short';e.textContent=events[0].summary||'行程';b.append(e)}
+  if(dayRecords){const e=document.createElement('div');e.className='month-short';e.textContent='精神 '+(dayRecords.energy||'—')+'/10';b.append(e)}
+  $('monthGrid').append(b);
+ }
+ const events=dayEvents(selectedDay),record=db[selectedDay];
+ $('monthSummary').textContent=selectedDay+'｜'+(source?.connected?'已同步 '+events.length+' 筆日曆行程':'Google 日曆未連線')+'；'+(record?'精神 '+(record.energy||'—')+'/10、疲勞 '+(record.fatigue||'—')+'/10':'尚未儲存健康紀錄')+'；每日習慣完成 '+habitCount(selectedDay)+' 項。';
+}
+function navigateMonth(delta){displayMonth=new Date(displayMonth.getFullYear(),displayMonth.getMonth()+delta,1);const date=iso(displayMonth);$('date').value=date;$('date').dispatchEvent(new Event('change',{bubbles:true}));renderCalendar();}
+$('monthPrev').onclick=()=>navigateMonth(-1);$('monthNext').onclick=()=>navigateMonth(1);
+$('monthToday').onclick=()=>{displayMonth=new Date();displayMonth.setDate(1);$('date').value=iso(new Date());$('date').dispatchEvent(new Event('change',{bubbles:true}));renderCalendar()};
+$('monthOpen').onclick=()=>page('day');
+$('date').addEventListener('change',()=>{const d=parse(selected());if(d.getMonth()!==displayMonth.getMonth()||d.getFullYear()!==displayMonth.getFullYear())displayMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar()});
+// Existing health save mutates localStorage before this refresh in another click listener.
+$('save').addEventListener('click',()=>setTimeout(renderCalendar,0));
+window.addEventListener('lifestyle-calendar-refreshed',renderCalendar);
+// Backup only keys owned by this application. Never save access tokens or cached Google events.
+const allowed=['lifestyle_reset_records_v1','lifestyle_tracker_routines_v1','lifestyle_smart_plan_prefs_v1','lifestyle_google_client_id_v1','lifestyle_gcal_selected_ids_v2'];
+$('appBackup').onclick=()=>{
+ const data={version:1,exportedAt:new Date().toISOString(),origin:location.origin,values:{}};
+ for(const k of allowed)if(localStorage.getItem(k)!==null)data.values[k]=localStorage.getItem(k);
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='LifestyleTracker_完整備份_'+iso(new Date())+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ $('backupStatus').textContent='已產生備份檔。請將它存放在私人安全的位置，不要提交到公開 GitHub。';
+};
+$('appImport').onclick=()=>$('appImportFile').click();
+$('appImportFile').onchange=async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{const incoming=JSON.parse(await f.text());if(incoming?.version!==1||!incoming?.values||typeof incoming.values!=='object')throw Error('備份格式不符');
+ if(!confirm('還原會覆蓋這個瀏覽器目前的健康紀錄、習慣及部分設定。建議先匯出現有備份。是否繼續？'))return;
+ for(const k of allowed)if(Object.prototype.hasOwnProperty.call(incoming.values,k)&&typeof incoming.values[k]==='string')localStorage.setItem(k,incoming.values[k]);
+ $('backupStatus').textContent='還原成功。重新整理頁面即可載入還原的所有資料。';alert('還原完成，請重新整理頁面');
+ }catch(err){$('backupStatus').textContent='備份讀取失敗：'+err.message}finally{e.target.value=''}
+};
+// Start on an app-style calendar, not the legacy vertically stacked view.
+renderCalendar();page('calendar');
+})();
+</script><script>
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(err=>console.warn('離線支援暫不可用',err)));
+}
+</script></body></html>
